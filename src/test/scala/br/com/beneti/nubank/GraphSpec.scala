@@ -32,20 +32,12 @@ class GraphSpec extends FunSpec {
       edges.foreach((edge: (Int, Int)) => graph = graph.addEdge(new Edge(edge._1,edge._2)))
     }
     
-    it("should return vertices order by closeness") {
+    it("should return ranking") {
       val graph = fixture.graph;
       
-      val vertices: Seq[Vertex] = graph.rankingByCloseness
+      val vertices: Seq[Vertex] = graph.ranking
       assert(vertices(0).id == 0)
       assert(vertices(3).id == 2)
-    }
-    
-    it("should return vertices order by farness") {
-      val graph = fixture.graph;
-      
-      val vertices: Seq[Vertex] = graph.rankingByFarness
-      assert(vertices(0).id == 1)
-      assert(vertices(3).id == 3)
     }
     
   }

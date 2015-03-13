@@ -9,15 +9,11 @@ case class Graph(vertices: Set[Vertex] = Set.empty[Vertex],
   def addEdge(edge: Edge) = 
     new Graph(vertices + Vertex(edge.x) + Vertex(edge.y), edges + edge)
 
-  def rankingByCloseness = {
-    this.ranking.vertices.toSeq.sortBy(v => v.closeness)
+  def ranking = {
+    this.perform.vertices.toSeq.sortBy(v => v.score)
   }
 
-  def rankingByFarness = {
-    this.ranking.vertices.toSeq.sortBy(v => v.farness)
-  }
-
-  private def ranking = {
+  private def perform = {
     var matrixSize = vertices.size
     var matrix = Array.fill(matrixSize, matrixSize)(Int.MaxValue/2)
     var edgesAsSeq = edges.toSeq
@@ -46,7 +42,7 @@ case class Graph(vertices: Set[Vertex] = Set.empty[Vertex],
 
     for (i <- 0 until matrix.length) {
       var sum = matrix(i).sum
-      verticesWithScores += new Vertex(i, 1.0/sum, sum)
+      verticesWithScores += new Vertex(i, 1.0/sum)
     }
 
     new Graph(verticesWithScores, edges)
