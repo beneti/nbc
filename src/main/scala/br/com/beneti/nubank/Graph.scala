@@ -1,51 +1,88 @@
 package br.com.beneti.nubank
 
+import scala.math.pow
+
 /**
  * @author beneti
  */
-case class Graph(vertices: Set[Vertex] = Set.empty[Vertex], 
-  edges: Set[Edge] = Set.empty[Edge]) {
+case class Graph(vertices: Set[Vertex] = Set.empty[Vertex],
+                 edges: Set[Edge] = Set.empty[Edge]) {
 
-  def addEdge(edge: Edge) = 
-    new Graph(vertices + Vertex(edge.x) + Vertex(edge.y), edges + edge)
+  private var verticesIndexes: Array[Int] = Array.empty[Int]
+  private var matrix = Array.fill(vertices.size, vertices.size)(Int.MaxValue / 2)
+  private var edgesAsSeq = edges.toSeq
+  private var verticesAsSeq = vertices.toSeq
 
-  def ranking = {
-    this.perform.vertices.toSeq.sortBy(v => v.score)
+  vertices.toSeq.foreach { x => verticesIndexes :+= x.id }
+
+  for (i <- 0 until edges.size) {
+
+    var x = verticesIndexes.indexOf(edgesAsSeq(i).x)
+    var y = verticesIndexes.indexOf(edgesAsSeq(i).y)
+
+    matrix(x)(y) = 1
+    matrix(y)(x) = 1
+    matrix(x)(x) = 0
+    matrix(y)(y) = 0
+  }
+
+  for {
+    k <- 0 until matrix.length
+    i <- 0 until matrix.length
+    j <- 0 until matrix.length
+  } {
+    var distance = matrix(i)(k) + matrix(k)(j)
+    if (distance < matrix(i)(j)) {
+      matrix(i)(j) = distance
+    }
+  }
+
+  def addEdge(edge: Edge) = {
+    var newVertices = vertices
+
+    if (verticesIndexes.indexOf(edge.x) == -1)
+      newVertices += Vertex(edge.x)
+
+    if (verticesIndexes.indexOf(edge.y) == -1)
+      newVertices += Vertex(edge.y)
+
+    new Graph(newVertices, edges + edge).perform
+  }
+
+  def ranking =
+    this.vertices.toSeq.sortBy(v => v.score)
+
+  def setFraudulent(id: Int) = {
+    var newVertices: Set[Vertex] = Set.empty[Vertex]
+    var index = verticesIndexes.indexOf(id)
+    for (i <- 0 until matrix.length) {
+      val currentVertex = verticesAsSeq(i)
+      newVertices += new Vertex(currentVertex.id, currentVertex.score, if (currentVertex.id == id) 0 else currentVertex.fraudScore)
+    }
+    
+    new Graph(newVertices, edges).perform
   }
 
   private def perform = {
-    var matrixSize = vertices.size
-    var matrix = Array.fill(matrixSize, matrixSize)(Int.MaxValue/2)
-    var edgesAsSeq = edges.toSeq
 
-    for (i <- 0 until edges.size) {
-      var x = edgesAsSeq(i).x
-      var y = edgesAsSeq(i).y
-      matrix(x)(y) = 1
-      matrix(y)(x) = 1
-      matrix(x)(x) = 0
-      matrix(y)(y) = 0
-    }
+    var newVertices: Set[Vertex] = Set.empty[Vertex]
 
-    for {
-      k <- 0 until matrix.length
-      i <- 0 until matrix.length
-      j <- 0 until matrix.length
-    } {
-      var distance = matrix(i)(k) + matrix(k)(j)
-      if (distance < matrix(i)(j)) {
-       matrix(i)(j) = distance
+    for (i <- 0 until verticesAsSeq.length) {
+      var sum = 0
+      var fraudScore = 1.0
+      for (j <- 0 until verticesAsSeq.length) {
+        val distance = matrix(i)(j)
+        if (distance < Int.MaxValue / 2)
+           sum += distance
+        if (verticesAsSeq(j).fraudScore == 0)
+          fraudScore = fraudScore * (1.0 - pow(1.0/2, distance))
       }
+      val id = verticesAsSeq(i).id
+      val score = 1.0 / sum * fraudScore
+      newVertices += new Vertex(id, score, fraudScore)
     }
 
-    var verticesWithScores: Set[Vertex] = Set.empty[Vertex]
-
-    for (i <- 0 until matrix.length) {
-      var sum = matrix(i).sum
-      verticesWithScores += new Vertex(i, 1.0/sum)
-    }
-
-    new Graph(verticesWithScores, edges)
+    new Graph(newVertices, edges)
 
   }
 

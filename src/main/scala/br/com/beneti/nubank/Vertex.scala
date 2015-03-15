@@ -3,4 +3,4 @@ package br.com.beneti.nubank
 /**
  * @author beneti
  */
-case class Vertex(id: Int, score: Double = 0) 
+case class Vertex(id: Int, score: Double = 0, fraudScore: Double = 1) 
