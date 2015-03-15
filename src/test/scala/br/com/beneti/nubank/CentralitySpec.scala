@@ -31,4 +31,14 @@ class CentralitySpec extends FunSpec with ScalatraSuite {
     }    
   }
   
+  describe("PUT /api/centrality/vertex") {
+    it("should return 200") {
+      post("/api/centrality/edge", Array(("x", "0"), ("y", "1"))) {
+        put("/api/centrality/vertex", Array(("id", "0"))) {
+          status should equal(200)
+        }
+      }
+    }    
+  }
+  
 }

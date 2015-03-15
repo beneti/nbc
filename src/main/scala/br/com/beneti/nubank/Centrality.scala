@@ -24,4 +24,8 @@ class Centrality extends ScalatraServlet with JacksonJsonSupport {
     Created()
   }
 
+  put("/vertex") {
+    graph = graph.setFraudulent(params("id").toInt)
+    Ok()
+  }
 }
