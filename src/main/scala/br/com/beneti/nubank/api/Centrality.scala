@@ -1,9 +1,11 @@
-package br.com.beneti.nubank
+package br.com.beneti.nubank.api
 
 import org.json4s.DefaultFormats
 import org.json4s.Formats
 import org.scalatra._
 import org.scalatra.json._
+import br.com.beneti.nubank.Graph
+import br.com.beneti.nubank.Edge
 
 class Centrality extends ScalatraServlet with JacksonJsonSupport {
   protected implicit val jsonFormats: Formats = DefaultFormats.withBigDecimal

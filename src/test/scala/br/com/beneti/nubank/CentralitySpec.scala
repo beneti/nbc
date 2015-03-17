@@ -5,7 +5,7 @@ import org.json4s.Formats
 import org.json4s.jackson.JsonMethods._
 import org.scalatest.FunSpec
 import org.scalatra.test.scalatest.ScalatraSuite
-import br.com.beneti.nubank.Centrality
+import br.com.beneti.nubank.api.Centrality
 
 class CentralitySpec extends FunSpec with ScalatraSuite {
   addServlet(classOf[Centrality], "/api/centrality/*")
