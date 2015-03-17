@@ -9,9 +9,6 @@ case class Graph(vertices: Set[Vertex] = Set.empty[Vertex],
                  edges: Set[Edge] = Set.empty[Edge]) {
 
   private var verticesIndexes: Array[Int] = Array.empty[Int]
-  private var matrix = Array.fill(vertices.size, vertices.size)(Int.MaxValue / 2)
-  private var edgesAsSeq = edges.toSeq
-  private var verticesAsSeq = vertices.toSeq
 
   vertices.toSeq.foreach ( x => verticesIndexes :+= x.id )
 
@@ -32,21 +29,22 @@ case class Graph(vertices: Set[Vertex] = Set.empty[Vertex],
 
   def setFraudulent(id: Int) = {
     var newVertices: Set[Vertex] = Set.empty[Vertex]
-    var index = verticesIndexes.indexOf(id)
-    for (i <- 0 until matrix.length) {
-      val currentVertex = verticesAsSeq(i)
-      newVertices += Vertex(currentVertex.id, currentVertex.score, if (currentVertex.id == id) 0 else currentVertex.fraudScore)
+    
+    vertices.foreach { vertex =>
+      newVertices += Vertex(vertex.id, vertex.score, if (vertex.id == id) 0 else vertex.fraudScore)      
     }
     
     Graph(newVertices, edges)
   }
 
   private def perform = {
+    
+    var matrix = Array.fill(vertices.size, vertices.size)(Int.MaxValue / 2)
+    var verticesAsSeq = vertices.toSeq
 
-    for (i <- 0 until edges.size) {
-
-      var x = verticesIndexes.indexOf(edgesAsSeq(i).x)
-      var y = verticesIndexes.indexOf(edgesAsSeq(i).y)
+    edges.foreach { edge => 
+      var x = verticesIndexes.indexOf(edge.x)
+      var y = verticesIndexes.indexOf(edge.y)
 
       matrix(x)(y) = 1
       matrix(y)(x) = 1
