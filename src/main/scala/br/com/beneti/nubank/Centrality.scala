@@ -8,7 +8,7 @@ import org.scalatra.json._
 class Centrality extends ScalatraServlet with JacksonJsonSupport {
   protected implicit val jsonFormats: Formats = DefaultFormats.withBigDecimal
   
-  var graph = new Graph
+  var graph = Graph()
   
   before() {
     contentType = formats("json")
@@ -19,7 +19,7 @@ class Centrality extends ScalatraServlet with JacksonJsonSupport {
   }
   
   post("/edge") {
-    val newEdge = new Edge(params("x").toInt, params("y").toInt)
+    val newEdge = Edge(params("x").toInt, params("y").toInt)
     graph = graph.addEdge(newEdge)
     Created()
   }

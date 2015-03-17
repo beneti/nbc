@@ -46,7 +46,7 @@ case class Graph(vertices: Set[Vertex] = Set.empty[Vertex],
     if (verticesIndexes.indexOf(edge.y) == -1)
       newVertices += Vertex(edge.y)
 
-    new Graph(newVertices, edges + edge).perform
+    Graph(newVertices, edges + edge).perform
   }
 
   def ranking =
@@ -57,10 +57,10 @@ case class Graph(vertices: Set[Vertex] = Set.empty[Vertex],
     var index = verticesIndexes.indexOf(id)
     for (i <- 0 until matrix.length) {
       val currentVertex = verticesAsSeq(i)
-      newVertices += new Vertex(currentVertex.id, currentVertex.score, if (currentVertex.id == id) 0 else currentVertex.fraudScore)
+      newVertices += Vertex(currentVertex.id, currentVertex.score, if (currentVertex.id == id) 0 else currentVertex.fraudScore)
     }
     
-    new Graph(newVertices, edges).perform
+    Graph(newVertices, edges).perform
   }
 
   private def perform = {
@@ -82,7 +82,7 @@ case class Graph(vertices: Set[Vertex] = Set.empty[Vertex],
       newVertices += new Vertex(id, score, fraudScore)
     }
 
-    new Graph(newVertices, edges)
+    Graph(newVertices, edges)
 
   }
 

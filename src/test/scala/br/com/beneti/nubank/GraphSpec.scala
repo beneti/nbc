@@ -9,7 +9,7 @@ import scala.io.Source
 class GraphSpec extends FunSpec {
   describe("Add an Edge") {
     it("should create two vertices") {
-      var graph = new Graph()
+      var graph = Graph()
       graph = graph.addEdge(new Edge(0, 1))
 
       assert(graph.vertices.toSeq(0).id == 0)
@@ -17,8 +17,8 @@ class GraphSpec extends FunSpec {
     }
 
     it("should create a edge") {
-      var graph = new Graph()
-      graph = graph.addEdge(new Edge(0, 1))
+      var graph = Graph()
+      graph = graph.addEdge(Edge(0, 1))
 
       assert(graph.edges.toSeq(0).x == 0)
       assert(graph.edges.toSeq(0).y == 1)
@@ -27,16 +27,16 @@ class GraphSpec extends FunSpec {
   
   describe("Fraudulent") {
     it("should decrease score for 0") {
-      var graph = new Graph()
-      graph = graph.addEdge(new Edge(0, 1))
+      var graph = Graph()
+      graph = graph.addEdge(Edge(0, 1))
       graph = graph.setFraudulent(0)
 
       assert(graph.vertices.toSeq(0).score == 0)
     }
 
     it("should decrease score for 0.5") {
-      var graph = new Graph()
-      graph = graph.addEdge(new Edge(0, 1))
+      var graph = Graph()
+      graph = graph.addEdge(Edge(0, 1))
       graph = graph.setFraudulent(0)
 
       assert(graph.vertices.toSeq(1).score == 0.5)
@@ -46,9 +46,9 @@ class GraphSpec extends FunSpec {
   describe("Centrality") {
     def fixture =
       new {
-        var graph = new Graph
+        var graph = Graph()
         val edges = Set((0, 2), (2, 3), (3, 1), (1, 0), (1, 2))
-        edges.foreach((edge: (Int, Int)) => graph = graph.addEdge(new Edge(edge._1, edge._2)))
+        edges.foreach((edge: (Int, Int)) => graph = graph.addEdge(Edge(edge._1, edge._2)))
       }
 
     it("should return ranking") {
@@ -77,9 +77,9 @@ class GraphSpec extends FunSpec {
       (values(0).toInt, values(1).toInt)
     }
 
-    var graph = new Graph
+    var graph = Graph()
     val edges = Source.fromFile("src/test/scala/br/com/beneti/nubank/edges").getLines().map { case (line) => extractEdges(line) }
-    edges.foreach((edge: (Int, Int)) => graph = graph.addEdge(new Edge(edge._1, edge._2)))
+    edges.foreach((edge: (Int, Int)) => graph = graph.addEdge(Edge(edge._1, edge._2)))
 
     it("should return ranking") {
       var vertices: Seq[Vertex] = graph.ranking
