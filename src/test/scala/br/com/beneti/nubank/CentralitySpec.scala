@@ -16,11 +16,17 @@ class CentralitySpec extends FunSpec with ScalatraSuite {
       post("/api/centrality/edge", Array(("x", "0"), ("y", "1"))) {
         status should equal(201)
       }
-    }    
+    }
+    
+    it("should return 400") {
+      post("/api/centrality/edge", Array(("x", "a"), ("lol", "1"))) {
+        status should equal(400)
+      }
+    }
   }
   
   describe("GET /api/centrality") {
-    it("should return list of vertices with and order by scores") {
+    it("should return a list of vertices ordered by score") {
       post("/api/centrality/edges", Array(("x", "0"), ("y", "1"))) {
         get("/api/centrality") {
           val ranking = parse(body).extract[List[Vertex]]
@@ -39,6 +45,12 @@ class CentralitySpec extends FunSpec with ScalatraSuite {
         }
       }
     }    
+    
+    it("should return 400") {
+      put("/api/centrality/vertex", Array(("id", "x"))) {
+        status should equal(400)
+      }
+    }
   }
   
 }

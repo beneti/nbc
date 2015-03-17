@@ -36,18 +36,21 @@ class GraphSpec extends FunSpec {
       new {
         var graph = Graph()
         graph = graph.addEdge(Edge(0, 1))
+        graph = graph.addEdge(Edge(0, 2))
         graph = graph.setFraudulent(0)
       }
     
-    it("should decrease score for 0") {
+    it("should set the informed vertex score to zero") {
       val graph = fixture.graph
 
       assert(graph.ranking(0).score == 0)
     }
 
-    it("should decrease score for 0.5") {
+    it("should halve all the neighbors vertices score") {
       val graph = fixture.graph
-      assert(graph.ranking(1).score == 0.5)
+      
+      assert(graph.ranking(1).score == 0.16666666666666666)
+      assert(graph.ranking(2).score == 0.16666666666666666)
     }
   }
 
@@ -60,7 +63,7 @@ class GraphSpec extends FunSpec {
         edges.foreach((edge: (Int, Int)) => graph = graph.addEdge(Edge(edge._1, edge._2)))
       }
 
-    it("should return ranking") {
+    it("should return the vertices ranked by score") {
       val graph = fixture.graph
 
       val vertices: Seq[Vertex] = graph.ranking
@@ -90,7 +93,7 @@ class GraphSpec extends FunSpec {
     val edges = Source.fromFile("src/test/scala/br/com/beneti/nubank/edges").getLines().map { case (line) => extractEdges(line) }
     edges.foreach((edge: (Int, Int)) => graph = graph.addEdge(Edge(edge._1, edge._2)))
 
-    it("should return ranking") {
+    it("should return the vertices ranked by score") {
       var vertices: Seq[Vertex] = graph.ranking
 
       vertices = vertices.filter { x => x.id == 44 || x.id == 88 }

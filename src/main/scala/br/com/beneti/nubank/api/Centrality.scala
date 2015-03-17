@@ -21,13 +21,23 @@ class Centrality extends ScalatraServlet with JacksonJsonSupport {
   }
   
   post("/edge") {
-    val newEdge = Edge(params("x").toInt, params("y").toInt)
-    graph = graph.addEdge(newEdge)
-    Created()
+    try {
+      val newEdge = Edge(params("x").toInt, params("y").toInt)
+      graph = graph.addEdge(newEdge)
+      Created()      
+    } catch {
+      case e: Exception =>
+        BadRequest()
+    }
   }
 
   put("/vertex") {
-    graph = graph.setFraudulent(params("id").toInt)
-    Ok()
+    try {
+      graph = graph.setFraudulent(params("id").toInt)
+      Ok()
+    } catch {
+      case e: Exception =>
+        BadRequest()
+    }
   }
 }
