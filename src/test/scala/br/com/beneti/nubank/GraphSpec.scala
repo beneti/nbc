@@ -1,6 +1,7 @@
 package br.com.beneti.nubank
 
 import org.scalatest.FunSpec
+import scala.io.Source
 
 /**
  * @author beneti
@@ -67,6 +68,27 @@ class GraphSpec extends FunSpec {
       assert(vertices(3).score == 0.1875)
     }
 
+  }
+  
+  describe("Centrality by given edges file") {
+
+    def extractEdges(line: String): (Int, Int) = {
+      val values = line.split("\\s+")
+      (values(0).toInt, values(1).toInt)
+    }
+
+    var graph = new Graph
+    val edges = Source.fromFile("src/test/scala/br/com/beneti/nubank/edges").getLines().map { case (line) => extractEdges(line) }
+    edges.foreach((edge: (Int, Int)) => graph = graph.addEdge(new Edge(edge._1, edge._2)))
+
+    it("should return ranking") {
+      var vertices: Seq[Vertex] = graph.ranking
+      
+      vertices = vertices.filter { x => x.id == 44 || x.id == 88 }
+      
+      assert("%.5f".format(vertices(0).score).toDouble == 0.00592)
+      assert("%.5f".format(vertices(1).score).toDouble == 0.00599)
+    }
   }
 
 }
