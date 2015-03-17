@@ -10,7 +10,7 @@ case class Graph(vertices: Set[Vertex] = Set.empty[Vertex],
 
   private var verticesIndexes: Array[Int] = Array.empty[Int]
 
-  vertices.toSeq.foreach ( x => verticesIndexes :+= x.id )
+  vertices.foreach ( x => verticesIndexes :+= x.id )
 
   def addEdge(edge: Edge) = {
     var newVertices = vertices
@@ -37,6 +37,10 @@ case class Graph(vertices: Set[Vertex] = Set.empty[Vertex],
     Graph(newVertices, edges)
   }
 
+  /**
+   * this method executes Floyd–Warshall algorithm to find shortest paths 
+   * to be used on the calc for closeness
+   */
   private def perform = {
     
     var matrix = Array.fill(vertices.size, vertices.size)(Int.MaxValue / 2)
@@ -65,6 +69,9 @@ case class Graph(vertices: Set[Vertex] = Set.empty[Vertex],
 
     var newVertices: Set[Vertex] = Set.empty[Vertex]
 
+    /**
+     * check matrix of paths to do the sum of distance and to get the fraud score
+     */
     for (i <- 0 until verticesAsSeq.length) {
       var sum = 0
       var fraudScore = 1.0
