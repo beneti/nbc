@@ -8,42 +8,51 @@ import scala.io.Source
  */
 class GraphSpec extends FunSpec {
   describe("Add an Edge") {
+    
+    def fixture =
+      new {
+        var graph = Graph()
+        graph = graph.addEdge(new Edge(0, 1))
+      }
+    
     it("should create two vertices") {
-      var graph = Graph()
-      graph = graph.addEdge(new Edge(0, 1))
+      val graph = fixture.graph
 
       assert(graph.vertices.toSeq(0).id == 0)
       assert(graph.vertices.toSeq(1).id == 1)
     }
 
     it("should create a edge") {
-      var graph = Graph()
-      graph = graph.addEdge(Edge(0, 1))
+      val graph = fixture.graph
 
       assert(graph.edges.toSeq(0).x == 0)
       assert(graph.edges.toSeq(0).y == 1)
     }
   }
-  
-  describe("Fraudulent") {
-    it("should decrease score for 0") {
-      var graph = Graph()
-      graph = graph.addEdge(Edge(0, 1))
-      graph = graph.setFraudulent(0)
 
-      assert(graph.vertices.toSeq(0).score == 0)
+  describe("Fraudulent") {
+    
+    def fixture =
+      new {
+        var graph = Graph()
+        graph = graph.addEdge(Edge(0, 1))
+        graph = graph.setFraudulent(0)
+      }
+    
+    it("should decrease score for 0") {
+      val graph = fixture.graph
+
+      assert(graph.ranking(0).score == 0)
     }
 
     it("should decrease score for 0.5") {
-      var graph = Graph()
-      graph = graph.addEdge(Edge(0, 1))
-      graph = graph.setFraudulent(0)
-
-      assert(graph.vertices.toSeq(1).score == 0.5)
+      val graph = fixture.graph
+      assert(graph.ranking(1).score == 0.5)
     }
   }
 
   describe("Centrality") {
+    
     def fixture =
       new {
         var graph = Graph()
@@ -52,15 +61,15 @@ class GraphSpec extends FunSpec {
       }
 
     it("should return ranking") {
-      val graph = fixture.graph;
+      val graph = fixture.graph
 
       val vertices: Seq[Vertex] = graph.ranking
       assert(vertices(0).score == 0.25)
       assert(vertices(3).score == 0.3333333333333333)
     }
-    
+
     it("should change ranking after set one vertex as fraudulent") {
-      var graph = fixture.graph;
+      var graph = fixture.graph
       graph = graph.setFraudulent(0)
 
       val vertices: Seq[Vertex] = graph.ranking
@@ -69,7 +78,7 @@ class GraphSpec extends FunSpec {
     }
 
   }
-  
+
   describe("Centrality by given edges file") {
 
     def extractEdges(line: String): (Int, Int) = {
@@ -83,9 +92,9 @@ class GraphSpec extends FunSpec {
 
     it("should return ranking") {
       var vertices: Seq[Vertex] = graph.ranking
-      
+
       vertices = vertices.filter { x => x.id == 44 || x.id == 88 }
-      
+
       assert("%.5f".format(vertices(0).score).toDouble == 0.00592)
       assert("%.5f".format(vertices(1).score).toDouble == 0.00599)
     }

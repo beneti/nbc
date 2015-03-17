@@ -13,29 +13,7 @@ case class Graph(vertices: Set[Vertex] = Set.empty[Vertex],
   private var edgesAsSeq = edges.toSeq
   private var verticesAsSeq = vertices.toSeq
 
-  vertices.toSeq.foreach { x => verticesIndexes :+= x.id }
-
-  for (i <- 0 until edges.size) {
-
-    var x = verticesIndexes.indexOf(edgesAsSeq(i).x)
-    var y = verticesIndexes.indexOf(edgesAsSeq(i).y)
-
-    matrix(x)(y) = 1
-    matrix(y)(x) = 1
-    matrix(x)(x) = 0
-    matrix(y)(y) = 0
-  }
-
-  for {
-    k <- 0 until matrix.length
-    i <- 0 until matrix.length
-    j <- 0 until matrix.length
-  } {
-    var distance = matrix(i)(k) + matrix(k)(j)
-    if (distance < matrix(i)(j)) {
-      matrix(i)(j) = distance
-    }
-  }
+  vertices.toSeq.foreach ( x => verticesIndexes :+= x.id )
 
   def addEdge(edge: Edge) = {
     var newVertices = vertices
@@ -46,11 +24,11 @@ case class Graph(vertices: Set[Vertex] = Set.empty[Vertex],
     if (verticesIndexes.indexOf(edge.y) == -1)
       newVertices += Vertex(edge.y)
 
-    Graph(newVertices, edges + edge).perform
+    Graph(newVertices, edges + edge)
   }
 
   def ranking =
-    this.vertices.toSeq.sortBy(v => v.score)
+    this.perform.vertices.toSeq.sortBy(v => v.score)
 
   def setFraudulent(id: Int) = {
     var newVertices: Set[Vertex] = Set.empty[Vertex]
@@ -60,10 +38,32 @@ case class Graph(vertices: Set[Vertex] = Set.empty[Vertex],
       newVertices += Vertex(currentVertex.id, currentVertex.score, if (currentVertex.id == id) 0 else currentVertex.fraudScore)
     }
     
-    Graph(newVertices, edges).perform
+    Graph(newVertices, edges)
   }
 
   private def perform = {
+
+    for (i <- 0 until edges.size) {
+
+      var x = verticesIndexes.indexOf(edgesAsSeq(i).x)
+      var y = verticesIndexes.indexOf(edgesAsSeq(i).y)
+
+      matrix(x)(y) = 1
+      matrix(y)(x) = 1
+      matrix(x)(x) = 0
+      matrix(y)(y) = 0
+    }
+
+    for {
+      k <- 0 until matrix.length
+      i <- 0 until matrix.length
+      j <- 0 until matrix.length
+    } {
+      var distance = matrix(i)(k) + matrix(k)(j)
+      if (distance < matrix(i)(j)) {
+        matrix(i)(j) = distance
+      }
+    }
 
     var newVertices: Set[Vertex] = Set.empty[Vertex]
 
@@ -79,7 +79,7 @@ case class Graph(vertices: Set[Vertex] = Set.empty[Vertex],
       }
       val id = verticesAsSeq(i).id
       val score = 1.0 / sum * fraudScore
-      newVertices += new Vertex(id, score, fraudScore)
+      newVertices += Vertex(id, score, fraudScore)
     }
 
     Graph(newVertices, edges)
